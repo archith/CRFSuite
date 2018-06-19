@@ -128,7 +128,7 @@ static crfsuite_params_t* crfsuite_train_params(crfsuite_trainer_t* self)
 static int crfsuite_train_train(
     crfsuite_trainer_t* self,
     const crfsuite_data_t *data,
-    const char *filename,
+    const char *filename_fmt,
     int holdout
     )
 {
@@ -161,7 +161,8 @@ static int crfsuite_train_train(
             (holdout != -1 ? &testset : NULL),
             tr->params,
             lg,
-            &w
+            &w,
+	    filename_fmt
             );
         break;
     case TRAIN_L2SGD:
@@ -207,9 +208,9 @@ static int crfsuite_train_train(
     }
 
     /* Store the model file. */
-    if (filename != NULL && *filename != '\0') {
-        gm->save_model(gm, filename, w, lg);
-    }
+//    if (filename != NULL && *filename != '\0') {
+//        gm->save_model(gm, filename, w, lg);
+//    }
 
     if (0 <= holdout) {
         dataset_finish(&testset);

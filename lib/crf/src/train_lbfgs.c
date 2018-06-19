@@ -116,6 +116,7 @@ static int lbfgs_progress(
     const lbfgsfloatval_t xnorm,
     const lbfgsfloatval_t gnorm,
     const lbfgsfloatval_t step,
+    const char *save_filename,
     int n,
     int k,
     int ls)
@@ -146,6 +147,8 @@ static int lbfgs_progress(
     logging(lg, "Line search trials: %d\n", ls);
     logging(lg, "Line search step: %f\n", step);
     logging(lg, "Seconds required for this iteration: %.3f\n", duration / (double)CLOCKS_PER_SEC);
+    logging(lg, "Saving to file: %s\n", save_filename);
+    gm->save_model(gm, save_filename, x, lg);
 
     /* Send the tagger with the current parameters. */
     if (testset != NULL) {
@@ -220,7 +223,8 @@ int crfsuite_train_lbfgs(
     dataset_t *testset,
     crfsuite_params_t *params,
     logging_t *lg,
-    floatval_t **ptr_w
+    floatval_t **ptr_w,
+    const char *savefile_fmt
     )
 {
     int ret = 0, lbret;
@@ -266,6 +270,7 @@ int crfsuite_train_lbfgs(
     logging(lg, "delta: %f\n", opt.delta);
     logging(lg, "linesearch: %s\n", opt.linesearch);
     logging(lg, "linesearch.max_iterations: %d\n", opt.linesearch_max_iterations);
+    logging(lg, "model snapshot format: %s\n", savefile_fmt);
     logging(lg, "\n");
 
     /* Set parameters for L-BFGS. */
@@ -307,7 +312,8 @@ int crfsuite_train_lbfgs(
         lbfgs_evaluate,
         lbfgs_progress,
         &lbfgsi,
-        &lbfgsparam
+        &lbfgsparam,
+	savefile_fmt
         );
     if (lbret == LBFGS_CONVERGENCE) {
         logging(lg, "L-BFGS resulted in convergence\n");

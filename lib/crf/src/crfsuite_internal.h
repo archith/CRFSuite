@@ -184,7 +184,8 @@ int crfsuite_train_lbfgs(
     dataset_t *testset,
     crfsuite_params_t *params,
     logging_t *lg,
-    floatval_t **ptr_w
+    floatval_t **ptr_w,
+    const char* filename_fmt
     );
 
 void crfsuite_train_lbfgs_init(crfsuite_params_t* params);
